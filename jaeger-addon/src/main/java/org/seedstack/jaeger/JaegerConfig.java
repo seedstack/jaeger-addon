@@ -1,5 +1,14 @@
+/*
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package org.seedstack.jaeger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +19,7 @@ import io.jaegertracing.spi.MetricsFactory;
 @Config("jaeger")
 public class JaegerConfig {
 
-    private boolean devMode = false;
+    private boolean devMode;
     private SamplerConfig samplerConfig;
     private SenderConfig senderConfig;
     private ReporterConfig reporterConfig;
@@ -21,8 +30,9 @@ public class JaegerConfig {
         return devMode;
     }
 
-    public void setDevMode(boolean devMode) {
+    public JaegerConfig setDevMode(boolean devMode) {
         this.devMode = devMode;
+        return this;
     }
 
     public SamplerConfig getSamplerConfig() {
@@ -68,13 +78,6 @@ public class JaegerConfig {
     public JaegerConfig setTracerConfig(TracerConfig tracerConfig) {
         this.tracerConfig = tracerConfig;
         return this;
-    }
-
-    @Override
-    public String toString() {
-
-        return "JaegerConfig";
-
     }
 
     public static class SamplerConfig {
@@ -179,15 +182,15 @@ public class JaegerConfig {
 
     public static class ReporterConfig {
 
-        private Boolean reporterLogSpans;
+        private boolean reporterLogSpans;
         private Integer reporterMaxQueueSize;
         private Integer reporterFlushInterval;
 
-        public Boolean getReporterLogSpans() {
+        public boolean isReporterLogSpans() {
             return reporterLogSpans;
         }
 
-        public ReporterConfig setReporterLogSpans(Boolean reporterLogSpans) {
+        public ReporterConfig setReporterLogSpans(boolean reporterLogSpans) {
             this.reporterLogSpans = reporterLogSpans;
             return this;
         }
@@ -229,15 +232,15 @@ public class JaegerConfig {
 
     public static class TracerConfig {
 
-        private Boolean traceId128Bit;
+        private boolean traceId128Bit;
         private Class<? extends MetricsFactory> metricsFactory;
         private Map<String, String> tracerTags = new HashMap();
 
-        public Boolean getTraceId128Bit() {
+        public boolean isTraceId128Bit() {
             return traceId128Bit;
         }
 
-        public TracerConfig setTraceId128Bit(Boolean traceId128Bit) {
+        public TracerConfig setTraceId128Bit(boolean traceId128Bit) {
             this.traceId128Bit = traceId128Bit;
             return this;
         }
@@ -251,11 +254,11 @@ public class JaegerConfig {
             return this;
         }
 
-        public Map getTracerTags() {
-            return tracerTags;
+        public Map<String, String> getTracerTags() {
+            return tracerTags == null ? null : Collections.unmodifiableMap(tracerTags);
         }
 
-        public TracerConfig setTracerTags(Map tracerTags) {
+        public TracerConfig setTracerTags(Map<String, String> tracerTags) {
             this.tracerTags = tracerTags;
             return this;
         }
