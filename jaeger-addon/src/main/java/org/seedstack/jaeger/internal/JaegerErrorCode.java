@@ -9,8 +9,8 @@ package org.seedstack.jaeger.internal;
 
 import org.seedstack.shed.exception.ErrorCode;
 
-/*
- * ErrorCode for Jaeger 
+/**
+ * ErrorCode for Jaeger
  */
 public enum JaegerErrorCode implements ErrorCode {
 

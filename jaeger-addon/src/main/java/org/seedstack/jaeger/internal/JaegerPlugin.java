@@ -16,13 +16,22 @@ import org.slf4j.LoggerFactory;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 
-/*
- * Plugin for Jaeger Tracer 
+/**
+ * Plugin for Jaeger Tracer
  */
 public class JaegerPlugin extends AbstractSeedPlugin {
+
+    /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(JaegerPlugin.class);
+
+    /** The jaeger config. */
     private JaegerConfig jaegerConfig;
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see io.nuun.kernel.core.AbstractPlugin#name()
+     */
     @Override
     public String name() {
         return "jaeger";

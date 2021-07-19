@@ -20,23 +20,35 @@ import com.google.inject.spi.TypeListener;
 
 import io.opentracing.Tracer;
 
-/*
- * TypeListener for Jaeger Tracer 
+/**
+ * TypeListener for Jaeger Tracer.
  */
 class TracerTypeListener implements TypeListener {
+
+    /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(TracerTypeListener.class);
+
+    /** The jaeger config. */
     private JaegerConfig jaegerConfig;
 
+    /**
+     * @param jaegerConfig
+     */
     TracerTypeListener(JaegerConfig jaegerConfig) {
         this.jaegerConfig = jaegerConfig;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see com.google.inject.spi.TypeListener#hear(com.google.inject.TypeLiteral, com.google.inject.spi.TypeEncounter)
+     */
     @Override
     public <T> void hear(TypeLiteral<T> type, TypeEncounter<T> encounter) {
-        LOGGER.info("Resgister with the TracerMemberInjector");
+
         for (Field field : type.getRawType().getDeclaredFields()) {
             if (field.getType() == Tracer.class && field.isAnnotationPresent(ServiceName.class)) {
-
+                LOGGER.info("Resgister with the TracerMemberInjector");
                 encounter.register(new TracerMemberInjector<>(field, jaegerConfig));
 
             }

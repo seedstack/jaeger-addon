@@ -9,6 +9,8 @@
 package org.seedstack.jaeger.internal;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.seedstack.jaeger.JaegerConfig;
 import org.seedstack.jaeger.ServiceName;
@@ -21,15 +23,18 @@ import com.google.common.base.Strings;
 import com.google.inject.MembersInjector;
 
 import io.nuun.kernel.api.plugin.PluginException;
+import io.opentracing.Tracer;
 
-/*
- * MemberInjector for Jaeger Tracer 
+/**
+ * MemberInjector for Jaeger Tracer
  */
 class TracerMemberInjector<T> implements MembersInjector<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TracerMemberInjector.class);
     private final Field field;
     private final JaegerConfig jaegerConfig;
     private final ServiceName annotation;
+    Tracer tracer;
+    Map<String, Tracer> tracersMap = new HashMap<>();
 
     TracerMemberInjector(Field field, JaegerConfig jaegerConfig) {
         this.field = field;
@@ -38,6 +43,11 @@ class TracerMemberInjector<T> implements MembersInjector<T> {
 
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see com.google.inject.MembersInjector#injectMembers(java.lang.Object)
+     */
     @Override
     public void injectMembers(T instance) {
 
@@ -50,7 +60,16 @@ class TracerMemberInjector<T> implements MembersInjector<T> {
         try {
 
             String serviceName = annotation.value();
-            io.opentracing.Tracer tracer = JaegerInternal.getTracer(serviceName, jaegerConfig);
+            if (tracersMap.containsKey(serviceName)) {
+
+                tracer = tracersMap.get(serviceName);
+            }
+
+            else {
+                tracer = JaegerInternal.getTracer(serviceName, jaegerConfig);
+                tracersMap.put(serviceName, tracer);
+            }
+
             ReflectUtils.setValue(ReflectUtils.makeAccessible(field), instance, tracer);
         } catch (RuntimeException e) {
             throw SeedException.wrap(e, JaegerErrorCode.ERROR_LOADING);

@@ -14,19 +14,31 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
 
-/*
- * Module for Jaeger Tracer 
+/**
+ * Module for Jaeger Tracer.
  */
 public class JaegerModule extends AbstractModule {
+
+    /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(JaegerModule.class);
+
+    /** The jaeger config. */
     private JaegerConfig jaegerConfig;
 
+    /**
+     * @param jaegerConfig
+     */
     JaegerModule(JaegerConfig jaegerConfig) {
 
         this.jaegerConfig = jaegerConfig;
 
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see com.google.inject.AbstractModule#configure()
+     */
     @Override
     protected void configure() {
         LOGGER.info("Bind the TypeListener for Tarcer");

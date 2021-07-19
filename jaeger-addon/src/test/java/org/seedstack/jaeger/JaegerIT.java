@@ -29,6 +29,8 @@ public class JaegerIT {
 
     @ServiceName("SomeService")
     Tracer tracer;
+    @ServiceName("SomeService")
+    Tracer tracer1;
 
     @Before
     public void setUp() {
@@ -39,10 +41,17 @@ public class JaegerIT {
     }
 
     @Test
-    public void tracer_is_injectable() {
+    public void test_tracer_is_injectable() {
 
         Assertions.assertThat(tracer).isNotNull();
         Assertions.assertThat(tracer).isInstanceOf(JaegerTracer.class);
+    }
+
+    @Test
+    public void test_another_tracer_assignment() {
+
+        Assertions.assertThat(tracer1).isNotNull();
+        Assertions.assertThat(tracer1).isInstanceOf(JaegerTracer.class);
     }
 
     @Test(expected = IllegalArgumentException.class)

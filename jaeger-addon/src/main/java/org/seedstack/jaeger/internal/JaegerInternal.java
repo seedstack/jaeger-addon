@@ -7,6 +7,8 @@
  */
 package org.seedstack.jaeger.internal;
 
+import java.util.Map;
+
 import org.seedstack.jaeger.JaegerConfig;
 import org.seedstack.jaeger.JaegerConfig.TracerConfig;
 import org.seedstack.seed.SeedException;
@@ -19,35 +21,43 @@ import io.jaegertracing.Configuration.ReporterConfiguration;
 import io.jaegertracing.Configuration.SamplerConfiguration;
 import io.jaegertracing.Configuration.SenderConfiguration;
 import io.jaegertracing.internal.JaegerTracer;
+import io.jaegertracing.internal.JaegerTracer.Builder;
+import io.jaegertracing.internal.reporters.CompositeReporter;
 import io.jaegertracing.internal.reporters.InMemoryReporter;
+import io.jaegertracing.internal.reporters.LoggingReporter;
 import io.jaegertracing.internal.samplers.ConstSampler;
 import io.jaegertracing.spi.MetricsFactory;
 import io.jaegertracing.spi.Reporter;
 import io.jaegertracing.spi.Sampler;
 import io.opentracing.Tracer;
 
-/*
+/**
  * JaegerInternal class for Jaeger Tracer initialisation
  */
+
 public class JaegerInternal {
     private static final Logger LOGGER = LoggerFactory.getLogger(JaegerInternal.class);
 
     private JaegerInternal() {
     }
 
-    /*
-     * @Return Jaeger Tracer based on jaegerConfig parameters
-     * 
-     * @Param serviceName is required
+    /**
+     * Gets the tracer.
+     *
+     * @param serviceName the service name
+     * @param jaegerConfig the jaeger config
+     * @return the tracer
      */
-
     public static Tracer getTracer(String serviceName, JaegerConfig jaegerConfig) {
 
         Configuration config = new Configuration(serviceName);
-
+        MetricsFactory metricsFactory = null;
+        boolean traceId128Bit = false;
+        Map<String, String> tracerTags = null;
         Tracer tracer;
 
         if (jaegerConfig.getSamplerConfig() != null) {
+
             SamplerConfiguration samplerConfig = new SamplerConfiguration().withType(jaegerConfig.getSamplerConfig().getSamplerType())
                     .withParam(jaegerConfig.getSamplerConfig().getSamplerParam())
                     .withManagerHostPort(jaegerConfig.getSamplerConfig().getSamplerManagerHostPort());
@@ -55,6 +65,7 @@ public class JaegerInternal {
         }
 
         if (jaegerConfig.getReporterConfig() != null) {
+
             ReporterConfiguration reporterConfig = new ReporterConfiguration().withLogSpans(jaegerConfig.getReporterConfig().isReporterLogSpans())
                     .withFlushInterval(jaegerConfig.getReporterConfig().getReporterFlushInterval())
                     .withMaxQueueSize(jaegerConfig.getReporterConfig().getReporterMaxQueueSize());
@@ -78,33 +89,47 @@ public class JaegerInternal {
 
         if (jaegerConfig.getTracerConfig() != null) {
             TracerConfig tracerConfig = jaegerConfig.getTracerConfig();
-            config.withTraceId128Bit(tracerConfig.isTraceId128Bit());
-            config.withTracerTags(tracerConfig.getTracerTags());
-            Class<? extends MetricsFactory> metricsFactory = tracerConfig.getMetricsFactory();
+            traceId128Bit = tracerConfig.isTraceId128Bit();
+            tracerTags = tracerConfig.getTracerTags();
+            config.withTraceId128Bit(traceId128Bit);
+            config.withTracerTags(tracerTags);
 
             try {
 
-                if (metricsFactory != null) {
-                    config.withMetricsFactory(metricsFactory.newInstance());
+                if (tracerConfig.getMetricsFactory() != null) {
+
+                    metricsFactory = tracerConfig.getMetricsFactory().newInstance();
+
+                    config.withMetricsFactory(metricsFactory);
                 }
             } catch (InstantiationException | IllegalAccessException e) {
 
-                throw SeedException.wrap(e, JaegerErrorCode.ERROR_INSTANTIATING_METRICS_FACTORY).put("class", metricsFactory);
+                throw SeedException.wrap(e, JaegerErrorCode.ERROR_INSTANTIATING_METRICS_FACTORY).put("class", tracerConfig.getMetricsFactory());
             }
         }
 
-        if (!jaegerConfig.isDevMode()) {
-            LOGGER.info("Initializing JaegerTracer with Backend Server as per yaml configuration parmaeters");
+        if (!jaegerConfig.isDevMode() && jaegerConfig.getSenderConfig() != null) {
 
             tracer = config.getTracer();
+            LOGGER.info("JaegerTracer Initialized with Backend Server as per yaml Configuration");
 
         }
 
         else {
-            LOGGER.info("Initializing InMemoryTracer without Backend Server beacuse Dev Mode is {}", jaegerConfig.isDevMode());
-            Reporter reporter = new InMemoryReporter();
+
+            Reporter inMemoryReporter = new InMemoryReporter();
+            Reporter loggingReporter = new LoggingReporter();
+            Reporter compositeReporter = new CompositeReporter(inMemoryReporter, loggingReporter);
             Sampler sampler = new ConstSampler(true);
-            tracer = new JaegerTracer.Builder(serviceName).withReporter(reporter).withSampler(sampler).build();
+
+            Builder builder = new JaegerTracer.Builder(serviceName).withReporter(compositeReporter).withSampler(sampler);
+            builder.withTags(tracerTags);
+            if (metricsFactory != null) {
+                builder.withMetricsFactory(metricsFactory);
+            }
+
+            tracer = builder.build();
+            LOGGER.info("InMemoryTracer Initialized without Backend Server");
 
         }
 
