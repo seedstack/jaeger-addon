@@ -18,10 +18,14 @@ import io.jaegertracing.Configuration.SamplerConfiguration;
 import io.jaegertracing.Configuration.SenderConfiguration;
 import io.jaegertracing.internal.JaegerTracer;
 import io.jaegertracing.internal.JaegerTracer.Builder;
+import io.jaegertracing.internal.metrics.Counter;
+import io.jaegertracing.internal.metrics.Gauge;
+import io.jaegertracing.internal.metrics.Timer;
 import io.jaegertracing.internal.reporters.CompositeReporter;
 import io.jaegertracing.internal.reporters.InMemoryReporter;
 import io.jaegertracing.internal.reporters.LoggingReporter;
 import io.jaegertracing.internal.samplers.ConstSampler;
+import io.jaegertracing.spi.MetricsFactory;
 import io.jaegertracing.spi.Reporter;
 import io.jaegertracing.spi.Sampler;
 import io.opentracing.Tracer;
@@ -51,7 +55,7 @@ public class JaegerInternal_IT {
     }
 
     @Test
-    public void test_getTracer_With_ConfigurationValues() {
+    public void test_getTracer_With_ConfigurationValues() throws Exception {
 
         io.jaegertracing.Configuration config = new io.jaegertracing.Configuration(serviceName);
 
@@ -75,8 +79,12 @@ public class JaegerInternal_IT {
 
         config.withTracerTags(tags);
 
+        MyMetricFactory myMetricFactory = new org.seedstack.jaeger.JaegerInternal_IT.MyMetricFactory();
+        config.withMetricsFactory(myMetricFactory);
+
         Tracer tracer = config.getTracer();
         Assertions.assertThat(tracer).isInstanceOf(JaegerTracer.class);
+        Assertions.assertThat(myMetricFactory).isInstanceOf(MetricsFactory.class);
 
     }
 
@@ -92,6 +100,40 @@ public class JaegerInternal_IT {
         builder.withTags(tags);
         Tracer tracer = builder.build();
         Assertions.assertThat(tracer).isInstanceOf(JaegerTracer.class);
+
+    }
+
+    class MyMetricFactory implements MetricsFactory {
+
+        @Override
+        public Counter createCounter(String name, Map<String, String> tags) {
+            return new Counter() {
+
+                @Override
+                public void inc(long delta) {
+                }
+            };
+        }
+
+        @Override
+        public Timer createTimer(final String name, final Map<String, String> tags) {
+            return new Timer() {
+
+                @Override
+                public void durationMicros(long time) {
+                }
+            };
+        }
+
+        @Override
+        public Gauge createGauge(final String name, final Map<String, String> tags) {
+            return new Gauge() {
+
+                @Override
+                public void update(long amount) {
+                }
+            };
+        }
 
     }
 }
