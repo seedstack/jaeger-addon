@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.seedstack.addons.jaeger</groupId>
     <artifactId>jaeger</artifactId>
@@ -35,14 +35,37 @@
                     <artifactId>license-maven-plugin</artifactId>
                     <configuration>
                         <includedLicenses>
-                            <includedLicense>Apache 2</includedLicense></includedLicenses>
+                            <includedLicense>Apache 2</includedLicense>
+                            <includedLicense>BSD</includedLicense>
+                            <includedLicense>CDDL</includedLicense>
+                            <includedLicense>LGPL 2.1</includedLicense>
+                            <includedLicense>LGPL 3.0</includedLicense>
+                            <includedLicense>MIT</includedLicense>
+                            <includedLicense>MPL 1.1</includedLicense>
+                            <includedLicense>MPL 2.0</includedLicense>
+                            <includedLicense>Public Domain</includedLicense>
+                            <includedLicense>WTFPL</includedLicense>
+
+                            <!-- Some licenses are ignored because they are alternatives to acceptable licenses and the plugin doesn't handle alternate 
+                                licenses -->
+                            <includedLicense>IGNORED_LICENSE</includedLicense>
+                        </includedLicenses>
                         <licenseMerges>
-                            <licenseMerge>Apache 2|Apache License, Version 2.0</licenseMerge>
-                            <licenseMerge>Apache 2|The Apache Software License, Version 2.0</licenseMerge>
-                            <licenseMerge>Apache 2|Apache License 2.0</licenseMerge>
                             <licenseMerge>Apache 2|Apache License, version 2.0</licenseMerge>
                             <licenseMerge>Apache 2|Apache License Version 2.0</licenseMerge>
+                            <licenseMerge>Apache 2|Apache License 2.0</licenseMerge>
+                            <licenseMerge>Apache 2|Apache License, Version 2.0</licenseMerge>
+                            <licenseMerge>Apache 2|The Apache Software License, Version 2.0</licenseMerge>
                             <licenseMerge>Apache 2|Apache 2.0</licenseMerge>
+                            <licenseMerge>BSD|The New BSD License</licenseMerge>
+                            <licenseMerge>CDDL|Common Development and Distribution License</licenseMerge>
+                            <licenseMerge>CDDL|CDDL + GPLv2 with classpath exception</licenseMerge>
+                            <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
+                            <licenseMerge>MIT|MIT License</licenseMerge>
+                            <licenseMerge>MIT|MIT license</licenseMerge>
+                            <licenseMerge>MIT|The MIT License</licenseMerge>
+                            <licenseMerge>IGNORED_LICENSE|GNU General Public License, version 2 (GPL2), with the classpath exception
+                            </licenseMerge>
                         </licenseMerges>
                     </configuration>
                 </plugin>
@@ -70,6 +93,26 @@
             </plugin>
         </plugins>
     </build>
+
+    <scm>
+        <url>https://github.com/seedstack/jaeger-addon</url>
+        <connection>scm:git:git://github.com/seedstack/jaeger-addon.git</connection>
+        <developerConnection>scm:git:git@github.com:seedstack/jaeger-addon.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>oss.sonatype.org-snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>

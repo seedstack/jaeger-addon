@@ -108,10 +108,12 @@ public class JaegerInternal {
             }
         }
 
-        if (!jaegerConfig.isDevMode() && jaegerConfig.getSenderConfig() != null) {
+        if (!jaegerConfig.isDevMode()) {
 
             tracer = config.getTracer();
-            LOGGER.info("JaegerTracer Initialized with Backend Server as per yaml Configuration");
+            LOGGER.info("JaegerTracer Initialized as per yaml Configuration");
+            LOGGER.info("if (agentHost,agentPort) and endPoint both are defined it will make (agentHost,agentPort) ineffective");
+            LOGGER.info("if (agentHost,agentPort) and endPoint both are undefined, it will give tracer with default host-Localhost, Port-6831");
 
         }
 
@@ -129,7 +131,7 @@ public class JaegerInternal {
             }
 
             tracer = builder.build();
-            LOGGER.info("InMemoryTracer Initialized without Backend Server");
+            LOGGER.info("InMemoryTracer Initialized");
 
         }
 
