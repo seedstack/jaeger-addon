@@ -13,13 +13,8 @@ package org.seedstack.jaeger.fixture;
 import io.jaegertracing.Configuration;
 
 public class CustomJaeger {
-
     public Configuration defaultConfiguration() {
-
         Configuration config = new Configuration("CustomService");
-
         return config;
-
     }
-
 }

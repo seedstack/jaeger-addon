@@ -10,15 +10,6 @@
  */
 package org.seedstack.jaeger;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.seedstack.seed.Configuration;
-import org.seedstack.seed.testing.junit4.SeedITRunner;
-
 import io.jaegertracing.Configuration.CodecConfiguration;
 import io.jaegertracing.Configuration.ReporterConfiguration;
 import io.jaegertracing.Configuration.SamplerConfiguration;
@@ -36,10 +27,17 @@ import io.jaegertracing.spi.MetricsFactory;
 import io.jaegertracing.spi.Reporter;
 import io.jaegertracing.spi.Sampler;
 import io.opentracing.Tracer;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.seedstack.seed.Configuration;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SeedITRunner.class)
 public class JaegerInternal_IT {
-
     @Configuration
     private JaegerConfig jaegerConfig;
     Map<String, String> tags = new HashMap<>();
@@ -47,23 +45,18 @@ public class JaegerInternal_IT {
 
     @Test
     public void test_JaegerConfig() {
-
         Assertions.assertThat(jaegerConfig).isNotNull();
-
     }
 
     @Test
     public void test_getTracer_WithDefalutValues() {
-
         io.jaegertracing.Configuration config = new io.jaegertracing.Configuration(serviceName);
         Tracer tracer = config.getTracer();
         Assertions.assertThat(tracer).isInstanceOf(JaegerTracer.class);
-
     }
 
     @Test
     public void test_getTracer_With_ConfigurationValues() throws Exception {
-
         io.jaegertracing.Configuration config = new io.jaegertracing.Configuration(serviceName);
 
         SamplerConfiguration samplerConfig = new SamplerConfiguration().withType("const").withParam(1).withManagerHostPort("127.0.0.1");
@@ -97,7 +90,6 @@ public class JaegerInternal_IT {
 
     @Test
     public void test_getInmemoryTracer() {
-
         Reporter inMemoryReporter = new InMemoryReporter();
         Reporter loggingReporter = new LoggingReporter();
         Reporter compositeReporter = new CompositeReporter(inMemoryReporter, loggingReporter);
@@ -111,7 +103,6 @@ public class JaegerInternal_IT {
     }
 
     class MyMetricFactory implements MetricsFactory {
-
         @Override
         public Counter createCounter(String name, Map<String, String> tags) {
             return new Counter() {
@@ -141,6 +132,5 @@ public class JaegerInternal_IT {
                 }
             };
         }
-
     }
 }

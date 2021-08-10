@@ -7,43 +7,19 @@
  */
 package org.seedstack.jaeger.internal;
 
-import org.seedstack.jaeger.JaegerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
+import org.seedstack.jaeger.JaegerConfig;
 
-/**
- * Module for Jaeger Tracer.
- */
-public class JaegerModule extends AbstractModule {
+class JaegerModule extends AbstractModule {
+    private final JaegerConfig jaegerConfig;
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaegerModule.class);
-
-    /** The jaeger config. */
-    private JaegerConfig jaegerConfig;
-
-    /**
-     * @param jaegerConfig
-     */
     JaegerModule(JaegerConfig jaegerConfig) {
-
         this.jaegerConfig = jaegerConfig;
-
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.google.inject.AbstractModule#configure()
-     */
     @Override
     protected void configure() {
-        LOGGER.info("Bind the TypeListener for Tracer");
         bindListener(Matchers.any(), new TracerTypeListener(jaegerConfig));
-
     }
-
 }

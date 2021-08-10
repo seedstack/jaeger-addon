@@ -7,16 +7,6 @@
  */
 package org.seedstack.jaeger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.seedstack.seed.testing.junit4.SeedITRunner;
-
 import io.jaegertracing.internal.JaegerSpan;
 import io.jaegertracing.internal.JaegerTracer;
 import io.jaegertracing.internal.metrics.InMemoryMetricsFactory;
@@ -26,37 +16,43 @@ import io.jaegertracing.internal.samplers.ConstSampler;
 import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
+import org.assertj.core.api.Assertions;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SeedITRunner.class)
 public class JaegerIT {
-
     InMemoryMetricsFactory metricsFactory;
     InMemoryReporter spanReporter;
-    JaegerTracer JaegerTracer;
+    JaegerTracer jaegerTracer;
 
-    @ServiceName("SomeService")
+    @Tracing("SomeService")
     Tracer tracer;
-    @ServiceName("SomeService")
+    @Tracing("SomeService")
     Tracer tracer1;
 
     @Before
     public void setUp() {
         metricsFactory = new InMemoryMetricsFactory();
         spanReporter = new InMemoryReporter();
-        JaegerTracer = new JaegerTracer.Builder("TracerTestService").withReporter(spanReporter).withSampler(new ConstSampler(true))
+        jaegerTracer = new JaegerTracer.Builder("TracerTestService").withReporter(spanReporter).withSampler(new ConstSampler(true))
                 .withMetrics(new Metrics(metricsFactory)).withTag("hostname", "localhost").withTag("ip", "127.0.0.1").build();
     }
 
     @Test
     public void test_tracer_is_injectable() {
-
         Assertions.assertThat(tracer).isNotNull();
         Assertions.assertThat(tracer).isInstanceOf(JaegerTracer.class);
     }
 
     @Test
     public void test_another_tracer_assignment() {
-
         Assertions.assertThat(tracer1).isNotNull();
         Assertions.assertThat(tracer1).isInstanceOf(JaegerTracer.class);
     }
@@ -83,17 +79,17 @@ public class JaegerIT {
 
     @Test
     public void testActiveSpanPropagation() {
-        Span span = JaegerTracer.buildSpan("parent").start();
-        try (Scope parent = JaegerTracer.activateSpan(span)) {
-            assertEquals(span, JaegerTracer.scopeManager().activeSpan());
+        Span span = jaegerTracer.buildSpan("parent").start();
+        try (Scope parent = jaegerTracer.activateSpan(span)) {
+            assertEquals(span, jaegerTracer.scopeManager().activeSpan());
         }
     }
 
     @Test
     public void testActiveSpan() {
-        Span span = JaegerTracer.buildSpan("parent").start();
-        try (Scope ignored = JaegerTracer.activateSpan(span)) {
-            JaegerTracer.buildSpan("child").start().finish();
+        Span span = jaegerTracer.buildSpan("parent").start();
+        try (Scope ignored = jaegerTracer.activateSpan(span)) {
+            jaegerTracer.buildSpan("child").start().finish();
         } finally {
             span.finish();
         }
@@ -109,24 +105,21 @@ public class JaegerIT {
 
     @Test
     public void testTracerTags() throws Exception {
-
-        assertEquals("localhost", JaegerTracer.tags().get("hostname"));
-        assertEquals("127.0.0.1", JaegerTracer.tags().get("ip"));
+        assertEquals("localhost", jaegerTracer.tags().get("hostname"));
+        assertEquals("127.0.0.1", jaegerTracer.tags().get("ip"));
 
     }
 
     @Test
     public void testTraceId128Bit() {
-
-        assertFalse(JaegerTracer.isUseTraceId128Bit());
+        assertFalse(jaegerTracer.isUseTraceId128Bit());
     }
 
     @Test
     public void testBuildSpan() {
         String expectedOperation = "someOperation";
-        JaegerSpan jaegerSpan = JaegerTracer.buildSpan(expectedOperation).withTag("spantag", "testing").start();
+        JaegerSpan jaegerSpan = jaegerTracer.buildSpan(expectedOperation).withTag("spantag", "testing").start();
         assertEquals(expectedOperation, jaegerSpan.getOperationName());
         assertEquals("testing", jaegerSpan.getTags().get("spantag"));
     }
-
 }

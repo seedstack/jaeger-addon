@@ -7,50 +7,28 @@
  */
 package org.seedstack.jaeger.internal;
 
-import java.lang.reflect.Field;
-
-import org.seedstack.jaeger.JaegerConfig;
-import org.seedstack.jaeger.ServiceName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
-
 import io.opentracing.Tracer;
+import org.seedstack.jaeger.JaegerConfig;
+import org.seedstack.jaeger.Tracing;
 
-/**
- * TypeListener for Jaeger Tracer.
- */
+import java.lang.reflect.Field;
+
 class TracerTypeListener implements TypeListener {
+    private final JaegerConfig jaegerConfig;
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TracerTypeListener.class);
-
-    /** The jaeger config. */
-    private JaegerConfig jaegerConfig;
-
-    /**
-     * @param jaegerConfig
-     */
     TracerTypeListener(JaegerConfig jaegerConfig) {
         this.jaegerConfig = jaegerConfig;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.google.inject.spi.TypeListener#hear(com.google.inject.TypeLiteral, com.google.inject.spi.TypeEncounter)
-     */
     @Override
     public <T> void hear(TypeLiteral<T> type, TypeEncounter<T> encounter) {
 
         for (Field field : type.getRawType().getDeclaredFields()) {
-            if (field.getType() == Tracer.class && field.isAnnotationPresent(ServiceName.class)) {
-                LOGGER.info("Resgister with the TracerMemberInjector");
+            if (field.getType() == Tracer.class && field.isAnnotationPresent(Tracing.class)) {
                 encounter.register(new TracerMemberInjector<>(field, jaegerConfig));
-
             }
         }
     }

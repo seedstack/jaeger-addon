@@ -9,10 +9,6 @@ package org.seedstack.jaeger.internal;
 
 import org.seedstack.shed.exception.ErrorCode;
 
-/**
- * ErrorCode for Jaeger
- */
-public enum JaegerErrorCode implements ErrorCode {
-
-    ERROR_LOADING, ERROR_INSTANTIATING_METRICS_FACTORY
+enum JaegerErrorCode implements ErrorCode {
+    EMPTY_SERVICE_NAME
 }

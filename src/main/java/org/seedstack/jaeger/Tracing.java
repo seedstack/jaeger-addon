@@ -7,23 +7,23 @@
  */
 package org.seedstack.jaeger;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+
 /**
- * Trace annotation marks fields which will be automatically valued with the Tracer corresponding to the value of the annotation.
+ * Trace annotation marks fields which will be automatically valued with the Tracer corresponding to the
+ * value of the annotation.
  */
 @Documented
-@Target({ PARAMETER, METHOD, FIELD })
+@Target({PARAMETER, METHOD, FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ServiceName {
-
+public @interface Tracing {
     /**
      * @return ServiceName
      */

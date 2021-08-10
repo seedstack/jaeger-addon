@@ -6,44 +6,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-# Put main configuration in this file
-# See http://seedstack.org/docs/seed/configuration for more information
-
 logging:
   level: INFO
 
-application:
-  # Unique identifier of the application accross your organization
-  id: my-web-project
-  # Make sure all your application base packages are listed below
-  basePackages: [ org.generated.project ]
-
-security:
-  # The security configuration realm uses the 'users' section below (replace it with a more useful realm later)
-  # See http://seedstack.org/docs/seed/manual/security/#realms for more information
-  realms: ConfigurationRealm
-  users:
-    # A default 'demo' user is defined with password 'demo'
-    demo: demo
-  web:
-    # The 'urls' section below in used to secure HTTP requests
-    # See http://seedstack.org/docs/seed/manual/security/#http-access-control for more information
-    urls:
-    #   -
-    #     pattern: /api/**
-    #     filters: authcBasic
-    
-    
 jaeger:
   #whether using Jaeger in devMode(boolean).if true trace will not reported to backend Server
   devMode: false
-  samplerConfig: 
+  samplerConfig:
     #The samplerType(String).valid values are remote (default),ratelimiting, probabilistic,const.
     samplerType: const
     #The samplerParam(Integer) that makes sense for the sampling. 
     samplerParam: 1
     #The http host:port(String) when using the remote controlled sampler.
-    samplerManagerHostPort: 128.0.0.1    
+    samplerManagerHostPort: 128.0.0.1
   senderConfig:
     #The hostname(String) for communicating with agent via udp.
     agentHost: 127.0.0.1
@@ -56,7 +31,7 @@ jaeger:
     #Username(String) to send as part of "Basic" authentication to the http endpoint.
     userName: myusername
     #Password(String) to send as part of "Basic" authentication to the endpoint.
-    password: mypassword 
+    password: mypassword
   reporterConfig:
     #Whether the reporter should also log the spans(boolean)
     reporterLogSpans: true

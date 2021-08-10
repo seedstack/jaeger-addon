@@ -7,36 +7,23 @@
  */
 package org.seedstack.jaeger;
 
+import io.jaegertracing.spi.MetricsFactory;
+import org.seedstack.coffig.Config;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.seedstack.coffig.Config;
-
-import io.jaegertracing.spi.MetricsFactory;
 
 /**
  * The Class JaegerConfig to populate Jaeger Configuration from yaml.
  */
 @Config("jaeger")
 public class JaegerConfig {
-
-    /** The dev mode. */
     private boolean devMode;
-
-    /** The sampler config. */
     private SamplerConfig samplerConfig;
-
-    /** The sender config. */
     private SenderConfig senderConfig;
-
-    /** The reporter config. */
     private ReporterConfig reporterConfig;
-
-    /** The codec config. */
     private CodecConfig codecConfig;
-
-    /** The tracer config. */
     private TracerConfig tracerConfig;
 
     /**
@@ -163,14 +150,8 @@ public class JaegerConfig {
      * The Class SamplerConfig.
      */
     public static class SamplerConfig {
-
-        /** The sampler type. */
         private String samplerType;
-
-        /** The sampler param. */
         private Integer samplerParam;
-
-        /** The sampler manager host port. */
         private String samplerManagerHostPort;
 
         /**
@@ -239,23 +220,11 @@ public class JaegerConfig {
      * The Class SenderConfig.
      */
     public static class SenderConfig {
-
-        /** The agent host. */
         private String agentHost;
-
-        /** The agent port. */
         private Integer agentPort;
-
-        /** The end point. */
         private String endPoint;
-
-        /** The auth token. */
         private String authToken;
-
-        /** The user name. */
         private String userName;
-
-        /** The password. */
         private String password;
 
         /**
@@ -384,14 +353,8 @@ public class JaegerConfig {
      * The Class ReporterConfig.
      */
     public static class ReporterConfig {
-
-        /** The reporter log spans. */
         private boolean reporterLogSpans;
-
-        /** The reporter max queue size. */
         private Integer reporterMaxQueueSize;
-
-        /** The reporter flush interval. */
         private Integer reporterFlushInterval;
 
         /**
@@ -461,7 +424,9 @@ public class JaegerConfig {
      */
     public static class CodecConfig {
 
-        /** The propagation. */
+        /**
+         * The propagation.
+         */
         private String propagation;
 
         /**
@@ -490,14 +455,8 @@ public class JaegerConfig {
      * The Class TracerConfig.
      */
     public static class TracerConfig {
-
-        /** The trace id 128 bit. */
         private boolean traceId128Bit;
-
-        /** The metrics factory. */
         private Class<? extends MetricsFactory> metricsFactory;
-
-        /** The tracer tags. */
         private Map<String, String> tracerTags = new HashMap<>();
 
         /**
@@ -559,7 +518,5 @@ public class JaegerConfig {
             this.tracerTags = tracerTags;
             return this;
         }
-
     }
-
 }

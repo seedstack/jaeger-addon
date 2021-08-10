@@ -7,30 +7,20 @@
  */
 package org.seedstack.jaeger.internal;
 
+import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.context.InitContext;
 import org.seedstack.jaeger.JaegerConfig;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.context.InitContext;
-
 /**
  * Plugin for Jaeger Tracer
  */
 public class JaegerPlugin extends AbstractSeedPlugin {
-
-    /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(JaegerPlugin.class);
-
-    /** The jaeger config. */
     private JaegerConfig jaegerConfig;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see io.nuun.kernel.core.AbstractPlugin#name()
-     */
     @Override
     public String name() {
         return "jaeger";
@@ -45,8 +35,6 @@ public class JaegerPlugin extends AbstractSeedPlugin {
 
     @Override
     public Object nativeUnitModule() {
-
         return new JaegerModule(jaegerConfig);
     }
-
 }
